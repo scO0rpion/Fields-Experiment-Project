@@ -1,0 +1,80 @@
+Consider the setting where we have observed datasets from multiple environments $\environments$. 
+Each dataset $\dataset[e] := \left\{ (X_{i}^{e}, Y_{i}^{e}) : i \leq n_e \right\} \subset \mathcal{X} \times \mathcal{Y}$ contains $n_e$ samples from the population distribution $\probability[e] \in \mathcal{P}(\mathcal{X} \times \mathcal{Y})$ where $e \in \environments$. 
+In particular, we impose certain parametric assumptions over these distributions, that is, the response variable $Y^{e}$ are only related to the covariates $X^e$ through a linear subspace that is invariant among different environments.
+In other words, there exists a matrix $B \in \mathbb{R}^{d \times k}$ where $ Y^{e} \indep X^{e} \given {B}^{\T} X^{e} $, and thus, the rgeression function satisfies $ \expectation{ Y^{e} \conditional X^{e} } = \expectation{ Y^{e} \conditional B^{\T} X^{e} } $.
+Although, the matrix $B \in \mathbb{R}^{d \times k}$ is not necessarily identifiable, but classical sufficient dimension reduction methods allows us to recover the column space of $B$ denoted by $\mathscr{L} = \spn\{ B_{i} \in \mathbb{R}^{d} : 1 \leq i \leq k \} = \col(B)$ which we also call central subspace. 
+Our goal in this article is to recover this central subspace by taking advantage of datasets from different environments, enabling out of distribution generalization in unseen environments with similar representations with very few samples.
+
+Estimating the regression function under such structures are indeed more amenable and adaptive, especially when we are dealing with high dimensional datasets such that $k \ll d$, as the number of necessary samples only grows with the subpace dimension $k$ as opposed to the ambient dimension $d$ \citep{xia2002adaptive} 
+and even parametric rates are achievable under further distributional assumptions \citep{yuan2023efficient}.
+These approaches enjoy their adaptivity property owing to: 
+\begin{enumerate}[label=(\roman*)]
+    \item learning the invariant subspace, enabling to project data onto a low dimensional subspace.
+    \item estimate the regression function in the projected subspace.
+\end{enumerate}
+Note that generalization to unseen environments with only few samples is a simple consequence of reusing the invariant subspace in observed environments which can be learned by samples from the observed environments.
+In the following we focus on the first part and elaborate on a famously used method for learning the central subspace known as Expected Gradient Outerproduct \citep{li2018sufficient, hristache2001direct}. 
+Assuming the regression function $f_e: \mathbb{R}^k \to \mathbb{R}: z \mapsto \expectation{Y^{e} \conditional B^{\T}X^{e} = z}$ is differentiable and denoting $Z^{e} = B^{\T} X^{e}$ to be the latent variable then the main observation is that the gradient of the regression function is in the desired central subspace
+, i.e. $ \nabla_{x} f_e (B^{\T}X^{e}) = B \nabla_z f_e(Z^{e}) \in \mathscr{L}$. Taking the average over the poppulation distribution yields expected gradient outer product (EGOP),
+$$ M^{e, e} := \expectation{ \nabla_x f_e( B^{\T}X^{e}) \nabla_x^{\T} f_e( B^{\T} X^{e}  ) } = B \expectation{ \nabla_z f_e( Z^{e}) \nabla_z^{\T} f_e( Z^{e}  ) } B^{\T} \in \mathbb{R}^{d \times d} $$
+Indeed the central subspace $\mathscr{L}$ is inclusive of columns space of $M^{e}$ and equality only holds if the latent gradient average outerproduct $\expectation{ \nabla_z f_e( Z^{e}) \nabla_z^{\T} f_e( Z^{e}  ) } \in \mathbb{R}^{k \times k}$ is invertible. 
+Under this condition which can be shown to be equivalent to $\mathscr{L}= \col(B)$ being the smallest subspace for which the regression function only varies in directions of columns of $B$, then the central subspace $\mathscr{L}$ can be identified.
+Interestingly one can take advantage of other datasets and take average gradient outer product with respect to other measures to recover the central subspace more accurately so long as the resulting latent gradient outer product is inveritble. 
+This naturally leads to defining,
+$$ M^{e, e'} := \expectation{ \nabla_x f_e( B^{\T}X^{e'}) \nabla_x^{\T} f_e( B^{\T} X^{e'}  ) } = B \expectation{ \nabla_z f_e( Z^{e'} ) \nabla_z^{\T} f_e( Z^{e'}  ) } B^{\T} \in \mathbb{R}^{d \times d}  $$
+where the gradient outer product is obtained from model in environment $e \in \environments$ but evaluated at enviromnet $e' \in \environments$.
+Indeed, each individual EGOP can be used for recovering the central subspace, but the remaining challenge is how to combine them.
+
+\paragraph*{Our Method:} We propose an estimator for central subspace using singular value decomposition of the following matrix,
+\begin{equation*}
+    M^{\environments \times \environments} = 
+    \begin{bmatrix}
+        M^{e_1,e_1} & \dots & M^{e_1,e_T} \\
+        M^{e_2, e_1} & \dots & M^{e_2, e_T} \\
+         & \vdots & \\
+        M^{e_T, e_1} & \dots & M^{e_T,e_T} \\
+    \end{bmatrix}
+    \in \mathbb{R}^{ dT \times dT }
+\end{equation*}
+where $T = \abs{\environments}$ is the number of observed environments. 
+This matrix, under the invariant subspace assumption has low rank (less than $k$) and captures the interactions across different environments.
+%One hopes to recover the central subspace using $M^{\environments \times \environments}$ more robustly and efficiently given that it captures the interactions across different environments 
+%However, estimating the central subspace based on this matrix $M^{\environments \times \environments}$ is less direct that of its submatrices $M^{e}$ as we can simly use $\col\left( M^{e} \right)$.
+%To that end, we propose an estimator for central subspace using singular value decomposition of the matrix $M^{\environments \times \environments}$. 
+More formally, let $r = \operatorname{rank}\left( M^{\environments \times \environments} \right)$ be the rank of this matrix then we have the following decomposition,
+\begin{equation*}
+    M^{\environments \times \environments} = U^{\environments} \Lambda {V^{\environments}}^{\T} =
+    \begin{bmatrix}
+        U_1^{e_1} & \dots & U_r^{e_1} \\
+        U_1^{e_2} & \dots & U_r^{e_2} \\
+        & \vdots & \\
+        U_1^{e_T} & \dots & U_r^{e_T} \\
+    \end{bmatrix}
+    \begin{bmatrix}
+        \lambda_1 & & & \\
+        & \lambda_2 & & \\
+        & & \ddots & \\
+        & & & \lambda_r \\
+    \end{bmatrix}
+    \begin{bmatrix}
+        V_1^{e_1} & \dots & V_r^{e_1} \\
+        V_1^{e_2} & \dots & U_r^{e_2} \\
+        & \vdots & \\
+        V_1^{e_T} & \dots & V_r^{e_T} \\
+    \end{bmatrix}^{\T}
+\end{equation*}
+where $U^{\environments}_i = [{U_i^{e_1}}^{\T}, {U_i^{e_2}}^{\T}, \dots, {U_i^{e_T}}^{\T}]^{\T} \in \mathbb{S}^{dT} $ are orthonormal vectors (of length one) in column space of $M^{\environments \times \environments}$ with $U_i^{e_j} \in \mathbb{R}^d$, 
+and similarly $V^{\environments}_i = [{V_i^{e_1}}^{\T}, {V_i^{e_2}}^{\T}, \dots, {V_i^{e_T}}^{\T}]^{\T} \in \mathbb{S}^{dT} $ are orthonormal vectors (of length one) in row space of $M^{\environments \times \environments}$ with $U_i^{e_j} \in \mathbb{R}^d$. 
+Finally, we estimate the central subspace using the column space of the following matrix,
+\begin{equation*}
+    \col \left( 
+    \begin{bmatrix}
+        \frac{1}{T} \sum_{e \in \environments}\frac{U_1^{e}}{ \norm{U_1^{e}} }, & \dots & , \frac{1}{T} \sum_{e \in \environments} \frac{U_k^{e}}{ \norm{U_k^{e}} } 
+    \end{bmatrix}
+    \right)
+\end{equation*}
+The normalization is in fact crucial in our setting and we suspect it acts as some form of "debiasing" (see Section 3 for further detail).
+ 
+
+
+

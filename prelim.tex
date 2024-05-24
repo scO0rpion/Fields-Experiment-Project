@@ -1,0 +1,74 @@
+\subsection{Sufficient Dimension Reduction}
+Our focus in this work is to estimate the shared central subspace among various environments. 
+In the following we proceed to formally define this subspace and specify some of its properties. 
+
+\begin{definition}[Central subspace]
+    For a pair $(X,Y)$ distributed according to $\probability \in \mathcal{P}(\mathcal{X} \times \mathcal{Y})$ we define the central subspace as the smallest subspace for which the regression function $\expectation{Y \conditional X}$ only varies in that subspace, i.e.
+    $$ \mathscr{L} := \bigcap \left\{ \col\left( B \right) \subseteq \mathbb{R}^{d} : \expectation{Y \conditional X} = \expectation{Y \conditional B^{\T} X} \,\, \probability \text{-almost-everywhere} \right\} $$
+    where $\col(\cdot)$ represent the column space of its argumnet.
+\end{definition}
+
+The existence of such a subspace can be guaranteed under mild assumptions over the support of $X$ (see \citep{li2018sufficient} for further details). 
+As discussed earlier the minimality assumption on the central subpace is crucial and implies its identifiability. 
+
+\begin{proposition}[identifiability of central subapce adopted from \citep{li2018sufficient}]
+    \label{prop:identifiability}
+    Suppose the regression function for $(X,Y) \sim \probability$ denoted by $f: \mathcal{X} \to \mathcal{Y}:x \mapsto \expectation{Y \conditional X = x}$ is differentiable. Then, the central subspace $\mathscr{L}$ associated with $\probability$ defined in \ref{def:grasssmanian-distance} satisfies the following:
+    \begin{enumerate}[label=(\roman*)]
+        \item The gradient of the regression function is in the central subspace at almost every point and,
+        $$ \operatorname{ Support }( \nabla_x f(X) ) = \mathscr{L} $$
+        \item The central subspace can be recovered from the column space of the average gradient outer product (EGOP) matrix,
+        $$ \col \left(\expectation{ \nabla_x f(X) \nabla_x^{\T} f(X) } \right) = \mathscr{L} $$
+    \end{enumerate} 
+\end{proposition}
+We omit the proofs for Proposition \ref{prop:identifiability} (see \citep{li2018sufficient} Theorem 11.1). 
+We may now state our central assumption.
+\begin{assumption}[Invariant central subspace]
+    \label{assum:invariance}
+    A collection of probability distributions $(\probability[e])_{e \in \environments}$ have invariant central subspaces if their corresponding central subspaces are all equal, i.e.
+    $$ \mathscr{L}^e = \mathscr{L} \quad \quad \forall e \in \environments $$
+\end{assumption}
+Although this assumption may seem to be strong, our numerical experiments demonstrates robustness to small deviations of this assumption where a few of the environments do not share the same central subspaces.
+
+In the sequel we take $P_{\mathscr{L}} \in \mathbb{R}^{d \times d}$ to be the projection matrix onto the central subspace and let $k = \operatorname{tr}(P_{\mathscr{L}}) = \operatorname{dim}(\mathscr{L})$ to be the dimension of the central subspace and assume its value is known to the statistian.\footnote{We later discuss further how can one estimate the value of $k = \operatorname{\mathscr{L}}$ using data.}
+In order to evaluate the performance of an estimator for the central subspace we use the following distance.
+\begin{definition}[Grassmanian distance]
+    \label{def:grasssmanian-distance}
+    For a pair of subspces $\hat{\mathscr{L}}, \mathscr{L} \subseteq \mathbb{R}^d$ of dimension $k$ we define the grassmanian distance using their projection matrices $P_{\mathscr{L}}, P_{\hat{\mathscr{L}}} \in \mathbb{R}^{d \times d}$ as,
+    $$ d(\hat{\mathscr{L}}, \mathscr{L}) := \norm[\operatorname{Fr}]{ P_{\hat{\mathscr{L}}} - P_{\mathscr{L}} } = \sqrt{ \operatorname{tr}\left( \left( P_{\hat{\mathscr{L}}} - P_{\mathscr{L}} \right)^2 \right) } $$
+\end{definition}
+\begin{remark}
+    We remark that this distance is closely related to $\sin \theta(\cdot, \cdot)$ distance commonly used in the literature where $\theta(\cdot, \cdot)$ represents the principal angles between the two subspaces. More formally, for $i \leq k$ the $i$'th principal angle corresponds to
+    $$ \sin^2 \theta_i(\hat{\mathscr{L}} , \mathscr{L}) = \lambda_i\left( \left( P_{\hat{\mathscr{L}}} - P_{\mathscr{L}} \right)^2 \right) $$
+    where $\lambda_i(\cdot)$ denotes the $i$'th eigenvalue of its argument. Thus, the distance defined in \ref{def:grasssmanian-distance} corresponds to $\sqrt{\sum_{i = 1}^{k} \sin^2 \theta_i}$ and accounts for all principal angles.
+\end{remark}
+
+\subsection{Non-parametric Estimation of Gradient Outer Product}
+In this section we demonstrate how we can estimate the central subspace using non-parametric kernel regression methods.
+
+Suppose $\hilbert_h$ is a reproducing kernel hilbert space induced from kernel $K_h:\mathcal{X} \times \mathcal{X} \to \mathbb{R}$ indexed by a tunable bandwidth parameter $h > 0$. 
+In particular we use the radial basis kernel $K_h:(x,x') \mapsto h^{-d/2} \exp( -\frac{ \norm[2]{x - x'} }{2 h^2} ) $. 
+Given a dataset $\dataset = \left\{ (X_i, Y_i) : i \leq n \right\}$ where $(X_i, Y_i) \sim \probability$ we define the regularized kernel estimator as,
+$$ \hat{f}_{\eta, h} = \arg\min_{f \in \hilbert_h} \sum_{i=1}^{n} (Y_i - f(X_i))^2 + \eta \norm[ \hilbert_h ]{f}^2 $$
+which can be explicitly written using Mercer's theorem as,
+$$ \hat{f}_{\eta, h}(\cdot) = \sum_{i=1}^{n} \hat{\alpha}_i K(\cdot, X_i) ,\quad\quad \hat{\alpha} = \left( K_h(X, X) + \eta \mathbb{I}_{n \times n} \right)^{-1} Y \in \mathbb{R}^{n} $$ 
+%where $\hat{\alpha}^e \in \mathbb{R}^{n_e}$ satisfies the normal equations,\footnote{Note that we are dropping the dependence of $\hat{\alpha}^e$ on the regularization parameter $\eta_e$ for notational convenience.}
+%$$ \hat{\alpha}^{e} = \left( K(X^e, X^e) + \eta_e \mathbb{I}_{n_e \times n_e} \right)^{-1} Y^e $$
+where $K_h(X,X) = (K_h(X_i, X_j))_{i,j} \in \mathbb{R}^{n \times n}$ is the kernel covariance matrix. Our EGOP estimate can be obtained via,
+$$ \hat{M}_{\eta, h} := \frac{1}{n} \sum_{i=1}^{n} \nabla_x \hat{f}_{\eta, h}(X_i) \nabla^{\T}_x \hat{f}_{\eta, h}(X_i) $$
+Although, non-asymptotic rates for the regularized kernel estimator exists (e.g. \citep{bach2017breaking} for a specific ReLU kernel), we are unaware of sample complexity guarantees for the EGOP estimate defined above, that is how many samples are needed so that $\hat{M}_{\eta,h}$ to be sufficiently close to the true expected gradient outer product.
+Existing results mostly deal with Nadaraya-Watson type estimates (e.g. \citep{yuan2023efficient, trivedi2014consistent}) or local linear regression approaches (e.g. \citep{wu2010learning}) as opposed to inverse methods where the regression coefficients are obtained from the inverse of a matrix. 
+However we use inverse methods due to their practical superiority.
+It is worth reiterating that we are merely concerned about consistency of the column space of the estimated EGOP matrix, and consistently estimating the regression function is not of essence in our setting.
+%Moreover, our approach described in the introduction can be thought of as a meta approach which combines a collection of estimates of EGOPs with shared structure and can be applied to other estimators for EGOP.
+
+We use kernel regression described above to obtain an estimate regression function for each environment and then form its corresponding EGOP matrices.
+Using sample splitting schemes we tune the hyperparameters, namely, regularization parameter $\eta_e$, and kernel bandwidth $h_e$, for each individual environment $e \in \environments$ and denote the regression function estimates as $\hat{f}_e$ (see Appendix for further details). 
+
+\begin{definition}[EGOP estimation per environment]
+    \label{def:egop-per-env}
+    Given datasets $\dataset[e] = \left\{ (X_i^e, Y_i^e): i \leq n_e \right\}$ where $(X_i^e, Y_i^e) \sim \probability[e]$ and it's esimate regression function $\hat{f}_e$ described above we obtain the expected gradient outer product estimates using,
+    $$ \hat{M}^{e,e'} := \frac{1}{n_{e'}} \sum_{i=1}^{n_{e'}} \nabla_x \hat{f}_{e}(X_i^{e'}) \nabla^{\T}_x \hat{f}_{e}(X_i^{e'}) \in \mathbb{R}^{d \times d}, \quad\quad \forall e,e' \in \environments $$
+    Moreover, we define $\hat{\mathscr{L}}^{e,e'} = \col\left( \hat{M}^{e,e'} \right)$ to be an estimate for central subspace corresponding to $\probability[e]$.
+\end{definition}
+

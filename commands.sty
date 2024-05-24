@@ -1,0 +1,59 @@
+
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{bm}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{bbm}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{mathrsfs}
+
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+
+\graphicspath{{./code/images/}}
+
+
+% Macros
+\newcommand{\red}[1]{ {\color{red}#1} }
+\newcommand{\blue}[1]{ {\color{blue}#1} }
+
+
+\newcommand{\probability}[1][]{ \mathbb{P}^{#1} }
+\newcommand{\prob}[2][]{ \probability[#1] \left[ #2 \right] }
+\newcommand{\norm}[2][2]{\left\| #2 \right\|_{ {#1} }}
+
+\newcommand{\expectation}[2][]{ \mathbb{E}_{#1}\left[ #2 \right] }
+
+\newcommand{\abs}[1]{ \left| #1 \right| }
+\newcommand{\fracl}[2]{{#1}/{#2}}
+
+
+\newcommand{\environments}{ \mathcal{E} }
+\newcommand{\dataset}[1][]{\mathcal{D}_{#1}}
+\newcommand{\hilbert}{\mathcal{H}}
+
+\newcommand{\T}{\top}
+\newcommand{\given}{ \,\mid\, }
+\newcommand{\conditional}{ \;\middle\vert\; }
+\newcommand{\indep}{\perp \!\!\! \perp}
+
+\DeclareMathOperator{\spn}{span}
+\DeclareMathOperator{\col}{col}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{claim}{Claim}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}{Definition}
+\newtheorem{assumption}{Assumption}
+\newtheorem{remark}{Remark}
+\newtheorem{proposition}{Proposition}

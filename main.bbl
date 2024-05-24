@@ -1,0 +1,58 @@
+\begin{thebibliography}{8}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Bach(2017)]{bach2017breaking}
+Francis Bach.
+\newblock Breaking the curse of dimensionality with convex neural networks.
+\newblock \emph{Journal of Machine Learning Research}, 18\penalty0
+  (19):\penalty0 1--53, 2017.
+
+\bibitem[Boursier et~al.(2022)Boursier, Konobeev, and
+  Flammarion]{boursier2022trace}
+Etienne Boursier, Mikhail Konobeev, and Nicolas Flammarion.
+\newblock Trace norm regularization for multi-task learning with scarce data.
+\newblock In \emph{Conference on Learning Theory}, pages 1303--1327. PMLR,
+  2022.
+
+\bibitem[Hristache et~al.(2001)Hristache, Juditsky, and
+  Spokoiny]{hristache2001direct}
+Marian Hristache, Anatoli Juditsky, and Vladimir Spokoiny.
+\newblock Direct estimation of the index coefficient in a single-index model.
+\newblock \emph{Annals of Statistics}, pages 595--623, 2001.
+
+\bibitem[Li(2018)]{li2018sufficient}
+Bing Li.
+\newblock \emph{Sufficient dimension reduction: Methods and applications with
+  R}.
+\newblock Chapman and Hall/CRC, 2018.
+
+\bibitem[Trivedi et~al.(2014)Trivedi, Wang, Kpotufe, and
+  Shakhnarovich]{trivedi2014consistent}
+Shubhendu Trivedi, Jialei Wang, Samory Kpotufe, and Gregory Shakhnarovich.
+\newblock A consistent estimator of the expected gradient outerproduct.
+\newblock In \emph{UAI}, pages 819--828, 2014.
+
+\bibitem[Wu et~al.(2010)Wu, Guinney, Maggioni, and Mukherjee]{wu2010learning}
+Qiang Wu, Justin Guinney, Mauro Maggioni, and Sayan Mukherjee.
+\newblock Learning gradients: predictive models that infer geometry and
+  statistical dependence.
+\newblock \emph{The Journal of Machine Learning Research}, 11:\penalty0
+  2175--2198, 2010.
+
+\bibitem[Xia et~al.(2002)Xia, Tong, Li, and Zhu]{xia2002adaptive}
+Yingcun Xia, Howell Tong, Wai~Keung Li, and Li-Xing Zhu.
+\newblock An adaptive estimation of dimension reduction space.
+\newblock \emph{Journal of the Royal Statistical Society Series B: Statistical
+  Methodology}, 64\penalty0 (3):\penalty0 363--410, 2002.
+
+\bibitem[Yuan et~al.(2023)Yuan, Xu, Kpotufe, and Hsu]{yuan2023efficient}
+Gan Yuan, Mingyue Xu, Samory Kpotufe, and Daniel Hsu.
+\newblock Efficient estimation of the central mean subspace via smoothed
+  gradient outer products.
+\newblock \emph{arXiv preprint arXiv:2312.15469}, 2023.
+
+\end{thebibliography}
